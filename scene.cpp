@@ -4,12 +4,7 @@
 #include <iostream>
 #include <windows.h>
 #include <vector>
-/*
- * scene.cpp
- *
- *  Created on: Dec 27, 2014
- *      Author: Ioana
- */
+#include "texture.h"
 
 using namespace std;
 
@@ -62,6 +57,9 @@ struct Camera {
 };
 
 Camera camera;
+
+Texture floorTex;
+Texture wallTex;
 
 GLvoid normalize(GLdouble &x, GLdouble &y, GLdouble &z) {
 	GLdouble norm = sqrt(x*x + y*y + z*z);
@@ -175,6 +173,11 @@ GLvoid init() {
 	camera.Oy.z = 0;
 
 	normalize(camera.Oz.x, camera.Oz.y, camera.Oz.z);
+
+	floorTex.setTextureId(1);
+	wallTex.setTextureId(2);
+	floorTex.loadTexture("floor4.bmp");
+	wallTex.loadTexture("wall4.bmp");
 }
 
 GLvoid rotate(GLdouble angle, Axis axis, Point &p) {
@@ -214,12 +217,15 @@ GLvoid draw_right_wall() {
 	if (!right_wall) return;
 	glNormal3f(1.0, 0.0, 0.0);
 	glColor3fv(wall_blue);
+	glBindTexture(GL_TEXTURE_2D, wallTex.getTextureId());
+	glEnable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
-		glVertex3f(-30, 0, -30);
-    	glVertex3f(-30, 0,  30);
-    	glVertex3f(-30, 30,  30);
-    	glVertex3f(-30, 30, -30);
+	glTexCoord2f(0.0, 0.0);	glVertex3f(-30, 0, -30);
+	glTexCoord2f(3.0, 0.0);	glVertex3f(-30, 0,  30);
+	glTexCoord2f(3.0, 3.0);glVertex3f(-30, 30,  30);
+	glTexCoord2f(0.0, 3.0);	glVertex3f(-30, 30, -30);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 GLvoid draw_left_wall() {
@@ -227,12 +233,15 @@ GLvoid draw_left_wall() {
 	if (!left_wall) return;
 	glColor3fv(wall_blue);
     glNormal3f(-1.0, 0.0, 0.0);
+    glBindTexture(GL_TEXTURE_2D, wallTex.getTextureId());
+    glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
-    		glVertex3f(30, 0, 30);
-        	glVertex3f(30, 30,  30);
-        	glVertex3f(30, 30,  -30);
-        	glVertex3f(30, 0, -30);
-        glEnd();
+    glTexCoord2f(0.0, 0.0);glVertex3f(30, 0, 30);
+    glTexCoord2f(3.0, 0.0);glVertex3f(30, 30,  30);
+    glTexCoord2f(3.0, 3.0);glVertex3f(30, 30,  -30);
+    glTexCoord2f(0.0, 3.0);glVertex3f(30, 0, -30);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 GLvoid draw_back_wall() {
@@ -240,12 +249,15 @@ GLvoid draw_back_wall() {
 	if (!back_wall) return;
 	glColor3fv(wall_blue);
     glNormal3f(0.0, 0.0, -1.0);
+    glBindTexture(GL_TEXTURE_2D, wallTex.getTextureId());
+    glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
-    	glVertex3f(30, 0, 30);
-        glVertex3f(-30, 0,  30);
-        glVertex3f(-30, 30,  30);
-        glVertex3f(30, 30, 30);
+    glTexCoord2f(0.0, 0.0);	glVertex3f(30, 0, 30);
+    glTexCoord2f(3.0, 0.0);glVertex3f(-30, 0,  30);
+    glTexCoord2f(3.0, 3.0);glVertex3f(-30, 30,  30);
+    glTexCoord2f(0.0, 3.0);glVertex3f(30, 30, 30);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
 
 }
 
@@ -254,12 +266,15 @@ GLvoid draw_front_wall () {
 	if (!front_wall) return;
 	glColor3fv(wall_blue);
 	glNormal3f(0.0, 0.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, wallTex.getTextureId());
+	glEnable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
-	glVertex3f(30, 0, -30);
-	glVertex3f(30, 30, -30);
- 	glVertex3f(-30, 30,  -30);
-    glVertex3f(-30, 0, -30);
+	glTexCoord2f(0.0, 0.0);glVertex3f(30, 0, -30);
+	glTexCoord2f(3.0, 0.0);glVertex3f(30, 30, -30);
+	glTexCoord2f(3.0, 3.0);glVertex3f(-30, 30,  -30);
+	glTexCoord2f(0.0, 3.0);glVertex3f(-30, 0, -30);
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 
 GLvoid draw_ceiling() {
@@ -279,14 +294,19 @@ GLvoid show_floor() {
 	GLfloat mat_ambient[] = { 64.0/255, 86.0/255, 122.0/255, 1.0 };
 	//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, mat_ambient);
 
+
 	glColor3fv(mat_ambient);
 	glNormal3f(0.0f, 1.0f, 0.0f);
+	glBindTexture(GL_TEXTURE_2D, floorTex.getTextureId());
+	glEnable(GL_TEXTURE_2D);
+
     glBegin(GL_QUADS);
-    		glVertex3f(-30, 0, -30);
-        	glVertex3f(-30, 0,  30);
-        	glVertex3f(30, 0,  30);
-        	glVertex3f( 30, 0, -30);
-        glEnd();
+    glTexCoord2f(0.0, 0.0); glVertex3f(-30, 0, -30);
+    glTexCoord2f(0.0, 3.0); glVertex3f(-30, 0,  30);
+    glTexCoord2f(3.0, 3.0); glVertex3f(30, 0,  30);
+    glTexCoord2f(3.0, 0.0); glVertex3f( 30, 0, -30);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 GLvoid show_desk() {
@@ -418,22 +438,22 @@ GLvoid show_chair() {
 
 
 	//legs
-		glPushMatrix();
-		glTranslated(-20, 1.25, 15);
-		drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
-		glPopMatrix();
-		glPushMatrix();
-		glTranslated(-23, 1.25, 15);
-		drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
-		glPopMatrix();
-		glPushMatrix();
-		glTranslated(-20, 1.25, 18);
-		drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
-		glPopMatrix();
-		glPushMatrix();
-		glTranslated(-23, 1.25, 18);
-		drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
-		glPopMatrix();
+	glPushMatrix();
+	glTranslated(-20, 1.25, 15);
+	drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslated(-23, 1.25, 15);
+	drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslated(-20, 1.25, 18);
+	drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslated(-23, 1.25, 18);
+	drawParallelepiped(0.5, 2.5, 0.5, GL_POLYGON);
+	glPopMatrix();
 
 
 	//brown_back
@@ -709,7 +729,13 @@ void findplane(GLfloat plane[4], GLfloat v0[3], GLfloat v1[3], GLfloat v2[3])
   plane[D] = -(plane[A] * v0[X] + plane[B] * v0[Y] + plane[C] * v0[Z]);
 }
 
+struct point {
+	GLdouble x, y, z;
+};
 
+struct vect {
+	GLdouble a, b, c;
+};
 
 GLvoid compute_shadows() {
 	  //shadow for the floor
@@ -786,20 +812,119 @@ GLvoid compute_shadows() {
 
 }
 
+
+void copy(vector<point> &a, vector<point> &b) {
+	for (int i = 0; i < a.size(); i++) {
+		a[i] = b[i];
+	}
+}
+
+vect normalize(vect v) {
+	GLdouble norm = sqrt(v.a * v.a + v.b * v.b + v.c * v.c);
+	vect new_v;
+	new_v.a = v.a / norm;
+	new_v.b = v.b / norm;
+	new_v.c = v.c / norm;
+	return new_v;
+}
+
+vect gradient(point p, GLdouble a, GLdouble b, GLdouble c) {
+	vect v;
+	v.a = (2 / (a * a)) * p.x;
+	v.b = (2 / (b * b)) * p.y;
+	v.c = (2 / (c * c)) * p.z;
+	return v;
+}
+
+GLvoid hiperboloid(GLdouble a, GLdouble b, GLdouble c, GLdouble slices, GLdouble slice_size) {
+	vector<point> first_row, second_row;
+	point p;
+	GLdouble pi = 3.141592654;
+	int culoare = 1;
+	glColor3f(0.0, 0.0, 1.0);
+	//initialize first_row
+	//GO FROM -1 TO  +1
+	GLdouble u = -(slice_size * slices);
+	for (GLdouble v = 0; v < 2*pi; v += (pi / 100)) {
+		p.y = b * sqrt(1 + u * u) * sin(v);
+		p.z = c * u	;
+		first_row.push_back(p);
+	}
+
+	//up part
+	u = u + slice_size;
+	for (; u <= slice_size * slices; u += slice_size) {
+		for (GLdouble v = 0; v < 2*pi; v += (pi / 100)) {
+			p.x = a * sqrt(1 + u * u) * cos(v);
+			p.y = b * sqrt(1 + u * u) * sin(v);
+			p.z = c * u;
+			second_row.push_back(p);
+		}
+		//ATENTIE la sens
+		GLint n = first_row.size();
+		vect normal;
+		for (int i = 0; i < n - 1; i++) {
+			glBegin(GL_TRIANGLES);
+			normal = normalize(gradient(first_row[i + 1], a, b, c));
+			glNormal3d(normal.a, normal.b, normal.c);
+			glVertex3d(first_row[i + 1].x, first_row[i + 1].y, first_row[i + 1].z);
+			normal = normalize(gradient(second_row[i], a, b, c));
+			glNormal3d(normal.a, normal.b, normal.c);
+			glVertex3d(second_row[i].x, second_row[i].y, second_row[i].z);
+			normal = normalize(gradient(first_row[i], a, b, c));
+			glNormal3d(normal.a, normal.b, normal.c);
+			glVertex3d(first_row[i].x, first_row[i].y, first_row[i].z);
+			//glVertex3d(first_row[i + 1].x, first_row[i + 1].y, first_row[i + 1].z);
+			glEnd();
+
+			glBegin(GL_TRIANGLES);
+			normal = normalize(gradient(second_row[i], a, b, c));
+			glNormal3d(normal.a, normal.b, normal.c);
+			glVertex3d(second_row[i].x, second_row[i].y, second_row[i].z);
+			normal = normalize(gradient(second_row[i + 1], a, b, c));
+			glNormal3d(normal.a, normal.b, normal.c);
+			glVertex3d(second_row[i + 1].x, second_row[i + 1].y, second_row[i + 1].z);
+			normal = normalize(gradient(first_row[i + 1], a, b, c));
+			glNormal3d(normal.a, normal.b, normal.c);
+			glVertex3d(first_row[i + 1].x, first_row[i + 1].y, first_row[i + 1].z);
+			//glVertex3d(second_row[i].x, second_row[i].y, second_row[i].z);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLES);
+		normal = normalize(gradient(first_row[0], a, b, c));
+		glNormal3d(normal.a, normal.b, normal.c);
+		glVertex3d(first_row[0].x, first_row[0].y, first_row[0].z);
+		normal = normalize(gradient(second_row[n - 1], a, b, c));
+		glNormal3d(normal.a, normal.b, normal.c);
+		glVertex3d(second_row[n - 1].x, second_row[n - 1].y, second_row[n - 1].z);
+		normal = normalize(gradient(first_row[n - 1], a, b, c));
+		glNormal3d(normal.a, normal.b, normal.c);
+		glVertex3d(first_row[n - 1].x, first_row[n - 1].y, first_row[n - 1].z);
+		glEnd();
+
+		glBegin(GL_TRIANGLES);
+		normal = normalize(gradient(second_row[n - 1], a, b, c));
+		glNormal3d(normal.a, normal.b, normal.c);;
+		glVertex3d(second_row[n - 1].x, second_row[n - 1].y, second_row[n - 1].z);
+		normal = normalize(gradient(second_row[0], a, b, c));
+		glNormal3d(normal.a, normal.b, normal.c);
+		glVertex3d(second_row[0].x, second_row[0].y, second_row[0].z);
+		normal = normalize(gradient(first_row[0], a, b, c));
+		glNormal3d(normal.a, normal.b, normal.c);
+		glVertex3d(first_row[0].x, first_row[0].y, first_row[0].z);
+		//glVertex3d(second_row[i].x, second_row[i].y, second_row[i].z);
+		glEnd();
+
+		copy(first_row, second_row);
+		second_row.clear();
+	}
+}
+
+
+
 GLvoid display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	compute_shadows();
-	//Using glFrustum
-//	glMatrixMode(GL_MODELVIEW);
-//	glLoadIdentity();
-//	gluLookAt(camera.origin.x, camera.origin.y, camera.origin.z, centerX, centerY, centerZ, camera.Oy.x, camera.Oy.y, camera.Oy.z);
-//
-//	glMatrixMode(GL_PROJECTION);
-//	glLoadIdentity();
-//
-//
-//	glFrustum(frustum_left, frustum_right, frustum_bottom, frustum_top, frustum_dnear, frustum_dfar);
-//	//gluPerspective(100, 10, 40,50);
 
 	//Not using glFrustum
 	glLoadIdentity();
@@ -1001,12 +1126,20 @@ GLvoid display() {
 	    glDisable (GL_BLEND);
 	 }
 
-	 show_axes();
-	 		show_bed();
-	 		show_desk();
-	 		show_garbage_bin();
-	 		show_chair();
-	 		show_bookshelf();
+	 //show_axes();
+/*	 glPushMatrix();
+	 glTranslated(0, 15, 0);
+	 glRotated(90, 1, 0, 0);
+
+	 hiperboloid(1, 2, 1, 50, 0.1);
+
+	 glPopMatrix();*/
+
+	 show_bed();
+	 show_desk();
+	 show_garbage_bin();
+	 show_chair();
+	 show_bookshelf();
 
 	GLfloat mat_specular[] = { 1, 1, 1, 1.0 };
 	GLfloat mat_shininess[] = { 100 };
@@ -1016,10 +1149,10 @@ GLvoid display() {
 //		glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 	//sphere for light test
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslated(0, 3, 0);
 	gluSphere(gluNewQuadric(), 3, 32, 32);
-	glPopMatrix();
+	glPopMatrix();*/
 	//glFlush();
 	glutSwapBuffers();
 
